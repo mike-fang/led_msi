@@ -10,9 +10,13 @@ if not os.path.isdir(imgs_dir):
     os.mkdir(imgs_dir)
 
 webcam = cv2.VideoCapture(0)
-for n in range(5):
+while(True):
     ret, frame = webcam.read()
-    f_name = os.path.join(curr_dir, 'imgs', f'frame_{n}.png')
-    print(f'Saving image to {f_name}')
-    cv2.imwrite(f_name, frame)
-    sleep(.5)
+    cv2.imshow("", frame)
+    if cv2.waitKey(1) & 0xff == ord("q"):
+        break
+
+    # f_name = os.path.join(curr_dir, 'imgs', f'frame_{n}.png')
+    # print(f'Saving image to {f_name}')
+    # cv2.imwrite(f_name, frame)
+    # sleep(.5)
