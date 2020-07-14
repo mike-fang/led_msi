@@ -53,7 +53,7 @@ def lab_pca(ms_img, q=0, pca_args={}):
     return img
 
 if __name__ == '__main__':
-    ms_img = np.load('../led_imgs.npy')
+    ms_img = np.load('./led_imgs.npy')
     img = lab_pca(ms_img, q=0.05, pca_args={'whiten': True})
     plt.imshow(img)
     plt.show()
