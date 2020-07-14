@@ -63,6 +63,12 @@ for i in range(8):
 
 plt.show()
 
+np_path = os.path.join(curr_dir, 'pca_example', 'led_imgs')
+#os.mkdir(np_path)
+np.save(np_path, array)
+
+from sklearn.decomposition import PCA
+
 # hyperspectral_image = cv2.fromarray(array)
 # f_name = os.path.join(curr_dir, 'imgs', f'frame_{hyperspectral_image}.png')
 # cv2.imwrite(f_name, hyperspectral_image)
