@@ -2,6 +2,13 @@ import cv2
 import numpy as np
 from time import sleep
 import os
+from relay_ft245r import relay_ft245r
+
+
+rb = relay_ft245r.FT245R()
+dev_list = rb.list_dev()
+dev = dev_list[0]
+rb.connect(dev)
 
 curr_dir = os.path.dirname(os.path.abspath(__file__))
 imgs_dir = os.path.join(curr_dir, 'imgs')
@@ -9,7 +16,9 @@ if not os.path.isdir(imgs_dir):
     print(f'Making directory {imgs_dir}')
     os.mkdir(imgs_dir)
 
-webcam = cv2.VideoCapture(0)
+webcam = cv2.VideoCapture(1)
+rb.switchon(4)
+
 while(True):
     ret, frame = webcam.read()
     cv2.imshow("", frame)
