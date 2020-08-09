@@ -25,50 +25,51 @@ ret,frame = webcam.read()
 H,W,C = frame.shape
 array = np.zeros((H,W,C*8), dtype=np.uint8)
 
-for i in range(1, 9):
 
+def capture_image(led, ms_img, setup_time=0, sleep_time=0.001, show=False, path=None):
     start = timer()
     time_elapsed = 0
-    setup_time = 15 if i == 1 else 3
     while time_elapsed < setup_time:
         ret, frame = webcam.read()
-        cv2.imshow("", frame)
+        if show:
+            cv2.imshow("", frame)
         time_elapsed = timer() - start
         if cv2.waitKey(1) & 0xff == ord("q"):
             break
-
-
-    rb.switchon(i)
-    time.sleep(.5)
+    rb.switchon(led)
+    time.sleep(sleep_time)
     ret, frame = webcam.read()
     if not ret:
         print(ret)
-        break
-
-    f_name = os.path.join(curr_dir, 'imgs', f'frame_{colors[i - 1]}.png')
-    time.sleep(.5)
-    cv2.imwrite(f_name, frame)
+        return
+    if path:
+        cv2.imwrite(path, frame)
     image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    print("image shape: ", image.shape)
-    array[:,:,(i - 1)*C:i*C] = image
-    images.append(image)
-    rb.switchoff(i)
+    if show:
+        print("image shape: ", image.shape)
+    ms_img[:, :, (led - 1) * C:led * C] = image
+    rb.switchoff(led)
 
-webcam.release()
-cv2.destroyAllWindows()
+if __name__ == '__main__':
 
-for i in range(8):
-    plt.subplot(2,4,i+1)
-    plt.imshow(array[:,:,i*3:(i+1)*3])
+    for i in range(4, 9):
+        f_name = os.path.join(curr_dir, 'imgs', f'frame_{colors[i - 1]}.png')
+        capture_image(i, array, setup_time=15 if i == 4 else 1, sleep_time=0.05, show=True, path=f_name)
 
-plt.show()
+    webcam.release()
+    cv2.destroyAllWindows()
 
-np_path = os.path.join(curr_dir, 'pca_example', 'led_imgs')
-#os.mkdir(np_path)
-np.save(np_path, array)
+    for i in range(8):
+        plt.subplot(2,4,i+1)
+        plt.imshow(array[:,:,i*3:(i+1)*3])
 
-from sklearn.decomposition import PCA
+    plt.show()
 
-# hyperspectral_image = cv2.fromarray(array)
-# f_name = os.path.join(curr_dir, 'imgs', f'frame_{hyperspectral_image}.png')
-# cv2.imwrite(f_name, hyperspectral_image)
+    np_path = os.path.join(curr_dir, 'pca_example', 'led_imgs')
+    #os.mkdir(np_path)
+    np.save(np_path, array)
+
+
+    # hyperspectral_image = cv2.fromarray(array)
+    # f_name = os.path.join(curr_dir, 'imgs', f'frame_{hyperspectral_image}.png')
+    # cv2.imwrite(f_name, hyperspectral_image)

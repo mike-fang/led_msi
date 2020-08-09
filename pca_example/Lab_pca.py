@@ -5,6 +5,23 @@ from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
 from sklearn.decomposition import PCA
 from skimage.color import lab2rgb
 
+def get_pca_fit(ms_img, n_comps=3, pca_args={}):
+    pca = PCA(n_components=3, **pca_args)
+    H, W, C = ms_img.shape
+
+    flat_img = ms_img.reshape((-1, C))
+    pca.fit(flat_img)
+
+    return pca
+
+def pca_transform(pca, ms_img):
+    H, W, C = ms_img.shape
+    flat_img = ms_img.reshape((-1, C))
+    flat_pca_img = pca.transform(flat_img)
+    pca_img = flat_pca_img.reshape((H, W, n_comps))
+    bases = pca.components_.T
+    return bases, pca_img
+
 def get_pca(ms_img, n_comps=3, pca_args={}):
     """
     Args:
@@ -26,6 +43,7 @@ def get_pca(ms_img, n_comps=3, pca_args={}):
     pca_img = flat_pca_img.reshape((H, W, n_comps))
     bases = pca.components_.T
     return bases, pca_img
+
 def unnormed_lab2rgb(ulab, q=0):
     """
     Converts an unnormalized Lab image to RGB
@@ -47,22 +65,40 @@ def unnormed_lab2rgb(ulab, q=0):
     lab *= np.array([[ [100, 2*AB_range, 2*AB_range] ]])
     lab -= np.array([[ [0, AB_range, AB_range] ]])
     return lab2rgb(lab)
+
 def lab_pca(ms_img, q=0, pca_args={}):
     _, pca_img = get_pca(ms_img, pca_args=pca_args)
     img = unnormed_lab2rgb(pca_img, q=q)
     return img
 
-if __name__ == '__main__':
-    ms_img = np.load('./led_imgs.npy')
-    img = lab_pca(ms_img, q=0.05, pca_args={'whiten': True})
-    plt.imshow(img)
-    plt.show()
+def lab_pca_fitted(pca, ms_img, q=0, pca_args={}):
+    _, pca_img = pca_transform(pca, ms_img)
+    img = unnormed_lab2rgb(pca_img, q=q)
+    return img
+
+def load_images(ms_img, pca=None, show=False):
+
+    if pca:
+        img = lab_pca_fitted(pca, ms_img, q=0.05, pca_args={'whiten': True})
+    else:
+        img = lab_pca(ms_img, q=0.05, pca_args={'whiten': True})
+
+    if show:
+        plt.imshow(img)
+        plt.show()
 
     R = img[:, :, 0].flatten()
     G = img[:, :, 1].flatten()
     B = img[:, :, 2].flatten()
 
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(R, G, B, marker='o', s=2)
-    plt.show()
+    if show:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        ax.scatter(R, G, B, marker='o', s=2)
+        plt.show()
+
+    return img
+
+if __name__ == '__main__':
+    ms_img = np.load('./led_imgs.npy')
+    load_images(ms_img, show=True)
