@@ -4,17 +4,17 @@ import matplotlib.pylab as plt
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
 from sklearn.decomposition import PCA
 from skimage.color import lab2rgb
+import time
 
 def get_pca_fit(ms_img, n_comps=3, pca_args={}):
     pca = PCA(n_components=3, **pca_args)
     H, W, C = ms_img.shape
-
     flat_img = ms_img.reshape((-1, C))
     pca.fit(flat_img)
 
     return pca
 
-def pca_transform(pca, ms_img):
+def pca_transform(pca, ms_img, n_comps=3):
     H, W, C = ms_img.shape
     flat_img = ms_img.reshape((-1, C))
     flat_pca_img = pca.transform(flat_img)
@@ -101,4 +101,9 @@ def load_images(ms_img, pca=None, show=False):
 
 if __name__ == '__main__':
     ms_img = np.load('./led_imgs.npy')
-    load_images(ms_img, show=True)
+    print(ms_img.shape)
+    pca = get_pca_fit(ms_img)
+    img = lab_pca_fitted(pca, ms_img)
+    print(img.shape)
+    plt.imshow(img)
+    plt.show()

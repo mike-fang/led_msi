@@ -11,8 +11,9 @@ from timeit import default_timer as timer
 curr_dir = os.path.dirname(os.path.abspath(__file__))
 imgs_dir = os.path.join(curr_dir, 'imgs')
 
-#plugged into USB port 1
 webcam = cv2.VideoCapture(1)
+#plugged into USB port 1
+#webcam = cv2.VideoCapture(1)
 colors = ('z_blank', 'zz_blank', 'zzz_blank', 'yellow', 'white', 'blue', 'red', 'green')
 images = []
 
@@ -26,7 +27,7 @@ H,W,C = frame.shape
 array = np.zeros((H,W,C*8), dtype=np.uint8)
 
 
-def capture_image(led, ms_img, setup_time=0, sleep_time=0.001, show=False, path=None):
+def capture_image(led, ms_img, setup_time=0, sleep_time=0.01, show=False, path=None):
     start = timer()
     time_elapsed = 0
     while time_elapsed < setup_time:
@@ -54,7 +55,7 @@ if __name__ == '__main__':
 
     for i in range(4, 9):
         f_name = os.path.join(curr_dir, 'imgs', f'frame_{colors[i - 1]}.png')
-        capture_image(i, array, setup_time=15 if i == 4 else 1, sleep_time=0.05, show=True, path=f_name)
+        capture_image(i, array, setup_time=15 if i == 4 else 1, sleep_time=0.01, show=True, path=f_name)
 
     webcam.release()
     cv2.destroyAllWindows()

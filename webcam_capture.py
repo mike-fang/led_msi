@@ -17,6 +17,7 @@ from relay_ft245r import relay_ft245r
 #     os.mkdir(imgs_dir)
 
 webcam = cv2.VideoCapture(1)
+#webcam = cv2.VideoCapture(1)
 
 
 def stream(get_image, pca=None):
