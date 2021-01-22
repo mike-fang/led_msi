@@ -99,6 +99,7 @@ def load_images(ms_img, pca=None, show=False):
 
     return img
 
+
 if __name__ == '__main__':
     ms_img = np.load('./led_imgs.npy')
     print(ms_img.shape)

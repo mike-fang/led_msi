@@ -47,17 +47,21 @@ def empty_sized_array(webcam):
     array = np.zeros((H, W, C * 8), dtype=np.uint8)
     return array
 
+
+
 if __name__ == '__main__':
 
     curr_dir = os.path.dirname(os.path.abspath(__file__))
     colors = ('z_blank', 'zz_blank', 'zzz_blank', 'yellow', 'white', 'blue', 'red', 'green')
 
-    args = {"-setup": 15, "-sleep": 0.01, "-show": True, "-w": 1, "-path": os.path.join(curr_dir, 'imgs'), "-test":False}
+    args = {"-setup": 15, "-sleep": 0.01, "-show": True, "-w": 1, "-path": 'imgs', "-test":False, "-stack":False}
 
     i = 1
     while i < len(sys.argv):
         args[sys.argv[i]] = sys.argv[i + 1]
         i += 2
+
+    args["-path"] = os.path.join(curr_dir, args["-path"])
 
     rb = initialize_rb()
     webcam = cv2.VideoCapture(int(args["-w"]))
@@ -77,5 +81,5 @@ if __name__ == '__main__':
             plt.imshow(array[:,:,i*3:(i+1)*3])
         plt.show()
 
-    np_path = os.path.join(curr_dir, 'pca_example', 'led_imgs')
+    np_path = os.path.join(curr_dir, args["-path"]);
     np.save(np_path, array)
